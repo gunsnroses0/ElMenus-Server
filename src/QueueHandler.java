@@ -48,12 +48,20 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 //                    }
 					System.out.println("Received: " + data);
 					FullHttpResponse response;
+					HttpResponseStatus status;
+
 					if (method == "POST") {
-						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CREATED);
+						status = HttpResponseStatus.CREATED;
 					} else if (method == "PATCH") {
-						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NO_CONTENT);
+						status = HttpResponseStatus.NO_CONTENT;
 					} else {
-						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
+						status = HttpResponseStatus.OK;
+					}
+
+					if (data.equals("") || data.equals("[]")) {
+						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
+					} else {
+						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
 								copiedBuffer(data.getBytes()));
 					}
 
