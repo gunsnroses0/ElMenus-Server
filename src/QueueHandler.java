@@ -42,10 +42,7 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 					byte[] body) throws IOException {
 				if (properties.getCorrelationId().equals(requestId)) {
 					String data = new String(body, "UTF-8");
-//                    if(method == "GET") {
-//                        Jedis jedis = new Jedis("localhost");
-//                        jedis.set(path, data);
-//                    }
+
 					System.out.println("Received: " + data);
 					FullHttpResponse response;
 					HttpResponseStatus status;
@@ -61,6 +58,10 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 					if (data.equals("") || data.equals("[]")) {
 						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
 					} else {
+						if (method == "GET") {
+							Jedis jedis = new Jedis("localhost", 6379);
+							jedis.set(path, data);
+						}
 						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
 								copiedBuffer(data.getBytes()));
 					}
