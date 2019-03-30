@@ -11,13 +11,14 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
 					<release>10</release>
 					<archive>
 						<manifest>
-							<mainClass>El-Menus.NettyHTTPServer</mainClass>
+							<addClasspath>true</addClasspath>
+							<mainClass>NettyHTTPServer</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
