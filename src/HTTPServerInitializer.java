@@ -24,7 +24,7 @@ public class HTTPServerInitializer extends ChannelInitializer<SocketChannel> {
 		p.addLast(new CorsHandler(corsConfig));
 		p.addLast(new HttpObjectAggregator(10 * 1024 * 1024));
 		p.addLast(new HTTPHandler());
-		p.addLast(new CacheHandler());
+// 		p.addLast(new CacheHandler());
 		p.addLast(new QueueHandler());
 //        p.addLast(new JSONHandler());
 	}
