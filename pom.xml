@@ -15,6 +15,11 @@
 				<version>3.8.0</version>
 				<configuration>
 					<release>10</release>
+					<archive>
+						<manifest>
+							<mainClass>El-Menus.NettyHTTPServer</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 
 			</plugin>
