@@ -14,6 +14,7 @@ public class CacheHandler extends ChannelInboundHandlerAdapter {
 		final String method = (String) ctx.channel().attr(AttributeKey.valueOf("METHOD")).get();
 		Jedis jedis = new Jedis("redis", 6379);
 	
+
 		System.out.println("Connected to Redis");
 
 		String data = jedis.get(path);
