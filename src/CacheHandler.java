@@ -12,7 +12,7 @@ public class CacheHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		final String path = (String) ctx.channel().attr(AttributeKey.valueOf("PATH")).get();
 		final String method = (String) ctx.channel().attr(AttributeKey.valueOf("METHOD")).get();
-		Jedis jedis = new Jedis("localhost");
+		Jedis jedis = new Jedis("localhost",7000);
 		System.out.println("Connected to Redis");
 
 		String data = jedis.get(path);
