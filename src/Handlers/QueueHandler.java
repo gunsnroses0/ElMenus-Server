@@ -1,3 +1,4 @@
+package Handlers;
 
 import com.rabbitmq.client.*;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,6 +26,7 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 		final String requestId = (String) ctx.channel().attr(AttributeKey.valueOf("REQUESTID")).get();
 		final String path = (String) ctx.channel().attr(AttributeKey.valueOf("PATH")).get();
 		final String method = (String) ctx.channel().attr(AttributeKey.valueOf("METHOD")).get();
+		final String fileName = (String) ctx.channel().attr(AttributeKey.valueOf("MEDIA")).get();
 		final String data = (String) msg;
 
 		System.out.println("DATA: " + data);
