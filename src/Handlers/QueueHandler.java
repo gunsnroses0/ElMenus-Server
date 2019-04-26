@@ -64,6 +64,7 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 						System.out.println("KEY Updated");
 					} else {
 						jedis.del(path);
+						jedis.del("/" + service);
 						System.out.println("KEY Deleted");
 					}
 
