@@ -56,7 +56,7 @@ public class HTTPHandler extends SimpleChannelInboundHandler<Object> {
 	private long correlationId;
 	private HttpPostRequestDecoder httpDecoder;
 	private static final HttpDataFactory factory = new DefaultHttpDataFactory(true);
-	private static final String FILE_UPLOAD_LOCN = "/Users/eletreby/Desktop/uploads/";
+	private static final String FILE_UPLOAD_LOCN = "src/uploads/";
 	volatile String responseBody;
 	ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -262,7 +262,7 @@ public class HTTPHandler extends SimpleChannelInboundHandler<Object> {
 								// Create a minioClient with the MinIO Server name, Port, Access key and Secret
 								// key.
 								MinioClient minioClient = new MinioClient("http://127.0.0.1:9000",
-										"LX9DS362TS4SEEX2GUFR", "Vi22ZLIBArFqA4sz5y+PG7B1Ujsk2sLjZMc+qCmF");
+										"1JXVTUHPEGP110KXQNY5", "BGgzSmLyD+lum44Qvg0LXlBz20b+GFI9oEop5C5y");
 
 								// Check if the bucket already exists.
 								boolean isExist = minioClient.bucketExists(service);
