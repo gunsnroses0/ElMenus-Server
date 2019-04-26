@@ -57,7 +57,7 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 						status = HttpResponseStatus.OK;
 					}
 					
-					Jedis jedis = new Jedis("localhost", 6379);
+					Jedis jedis = new Jedis("redis", 6379);
 					System.out.println("KEY: " + path);
 					if (method == "GET") {
 						jedis.set(path, data);
@@ -101,7 +101,7 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 		try {
 			// sharing connection between threads
 			factory = new ConnectionFactory();
-			factory.setHost("localhost");
+			factory.setHost("RABBIT_MQ_SERVICE_HOST");
 
 			connection = factory.newConnection();
 			mqChannel = connection.createChannel();

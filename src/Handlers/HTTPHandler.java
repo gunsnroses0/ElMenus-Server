@@ -259,10 +259,14 @@ public class HTTPHandler extends SimpleChannelInboundHandler<Object> {
 								outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
 							}
 							try {
+								String minio_host = System.getenv("MINIO_SERVICE_SERVICE_HOST");
+								String access_key = System.getenv("MINIO_ACCESS_KEY");
+								String secret_key = System.getenv("MINIO_SECRET_KEY");
+
 								// Create a minioClient with the MinIO Server name, Port, Access key and Secret
 								// key.
-								MinioClient minioClient = new MinioClient("http://127.0.0.1:9000",
-										"1JXVTUHPEGP110KXQNY5", "BGgzSmLyD+lum44Qvg0LXlBz20b+GFI9oEop5C5y");
+								MinioClient minioClient = new MinioClient("http://"+ minio_host+ ":9000",
+										access_key, secret_key);
 
 								// Check if the bucket already exists.
 								boolean isExist = minioClient.bucketExists(service);
