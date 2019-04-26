@@ -56,14 +56,20 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 					} else {
 						status = HttpResponseStatus.OK;
 					}
+					
+					Jedis jedis = new Jedis("localhost", 6379);
+					System.out.println("KEY: " + path);
+					if (method == "GET") {
+						jedis.set(path, data);
+						System.out.println("KEY Updated");
+					} else {
+						jedis.del(path);
+						System.out.println("KEY Deleted");
+					}
 
 					if (data.equals("") || data.equals("[]")) {
 						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
 					} else {
-						if (method == "GET") {
-							Jedis jedis = new Jedis("redis", 6379);
-							jedis.set(path, data);
-						}
 						response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status,
 								copiedBuffer(data.getBytes()));
 					}
@@ -94,7 +100,7 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 		try {
 			// sharing connection between threads
 			factory = new ConnectionFactory();
-			factory.setHost("rabbit-mq");
+			factory.setHost("localhost");
 
 			connection = factory.newConnection();
 			mqChannel = connection.createChannel();

@@ -13,7 +13,7 @@ public class CacheHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		final String path = (String) ctx.channel().attr(AttributeKey.valueOf("PATH")).get();
 		final String method = (String) ctx.channel().attr(AttributeKey.valueOf("METHOD")).get();
-		Jedis jedis = new Jedis("redis", 6379);
+		Jedis jedis = new Jedis("localhost", 6379);
 	
 
 		System.out.println("Connected to Redis");
@@ -21,6 +21,7 @@ public class CacheHandler extends ChannelInboundHandlerAdapter {
 		String data = jedis.get(path);
 		if (data != null && method == "GET") {
 			System.out.println("IN CACHE");
+			System.out.println(path);
 
 			FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
 					copiedBuffer(data.getBytes()));

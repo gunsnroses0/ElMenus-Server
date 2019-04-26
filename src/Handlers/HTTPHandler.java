@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +21,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import io.minio.MinioClient;
+import io.minio.errors.MinioException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -85,7 +91,7 @@ public class HTTPHandler extends SimpleChannelInboundHandler<Object> {
 				if (msg instanceof HttpContent) {
 					HttpContent chunk = (HttpContent) msg;
 					httpDecoder.offer(chunk);
-					formString = readChunk(ctx);
+					formString = readChunk(ctx, service);
 					formJson = (JSONObject) formParser.parse(formString);
 					if (chunk instanceof LastHttpContent) {
 						resetPostRequestDecoder();
@@ -220,7 +226,7 @@ public class HTTPHandler extends SimpleChannelInboundHandler<Object> {
 
 	// Media
 
-	private String readChunk(ChannelHandlerContext ctx) throws IOException, InterruptedException {
+	private String readChunk(ChannelHandlerContext ctx, String service) throws IOException, InterruptedException {
 		JSONObject json = new JSONObject();
 		try {
 			while (httpDecoder.hasNext()) {
@@ -236,27 +242,42 @@ public class HTTPHandler extends SimpleChannelInboundHandler<Object> {
 							json.put(data.getName(), value);
 							break;
 						case FileUpload:
+							Random rand = new Random();
 							String fileName = "";
 							FileUpload fileUpload = (FileUpload) data;
 							File file = new File(FILE_UPLOAD_LOCN + fileUpload.getFilename());
-							fileName = fileUpload.getFilename();
-							int i = 1;
-							while (file.exists()) {
-								String fileArray[] = fileUpload.getFilename().split("\\.");
-								fileName = "";
-								for (int j = 0; j < fileArray.length - 1; j++) {
-									fileName += fileArray[j] + ".";
-								}
-								fileName = fileName.substring(0, fileName.length() - 1);
-								fileName += " (" + i + ")." + fileArray[fileArray.length - 1];
-								file = new File(FILE_UPLOAD_LOCN + fileName);
-								i++;
+							String fileArray[] = fileUpload.getFilename().split("\\.");
+							for (int j = 0; j < fileArray.length - 1; j++) {
+								fileName += fileArray[j] + ".";
 							}
+							fileName = fileName.substring(0, fileName.length() - 1) + rand.nextInt();
+							fileName += "." + fileArray[fileArray.length - 1];
+							file = new File(FILE_UPLOAD_LOCN + fileName);
 							file.createNewFile();
 							try (FileChannel inputChannel = new FileInputStream(fileUpload.getFile()).getChannel();
 									FileChannel outputChannel = new FileOutputStream(file).getChannel()) {
 								outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
 							}
+							try {
+								// Create a minioClient with the MinIO Server name, Port, Access key and Secret
+								// key.
+								MinioClient minioClient = new MinioClient("http://127.0.0.1:9000",
+										"LX9DS362TS4SEEX2GUFR", "Vi22ZLIBArFqA4sz5y+PG7B1Ujsk2sLjZMc+qCmF");
+
+								// Check if the bucket already exists.
+								boolean isExist = minioClient.bucketExists(service);
+								if (isExist) {
+									System.out.println("Bucket already exists.");
+								} else {
+									// Make a new bucket called asiatrip to hold a zip file of photos.
+									minioClient.makeBucket(service);
+								}
+								InputStream is = new FileInputStream(file);
+								minioClient.putObject(service, fileName, file.getAbsolutePath());
+							} catch (MinioException e) {
+								System.out.println("Error occurred: " + e);
+							}
+							file.delete();
 							json.put("media", fileName);
 							break;
 						}
