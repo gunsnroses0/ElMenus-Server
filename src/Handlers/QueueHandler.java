@@ -100,8 +100,9 @@ public class QueueHandler extends ChannelInboundHandlerAdapter {
 	private void initializeQueue() {
 		try {
 			// sharing connection between threads
+			String host = System.getenv("RABBIT_MQ_SERVICE_HOST");
 			factory = new ConnectionFactory();
-			factory.setHost("RABBIT_MQ_SERVICE_HOST");
+			factory.setHost(host);
 
 			connection = factory.newConnection();
 			mqChannel = connection.createChannel();
